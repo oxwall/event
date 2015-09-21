@@ -149,13 +149,14 @@ class EVENT_BOL_EventDao extends OW_BaseDao
      */
     public function findExpiredEventsForCronJobs( $first, $count )
     {        
-        $params = array('first' => (int) $first, 'count' => (int) $count);
+        $params = array('first' => (int) $first, 'count' => (int) $count, 'time' => time());
         
         $query = " SELECT DISTINCT `e`.* FROM `" . $this->getTableName() . "` as `e` "
                . " INNER JOIN `" . EVENT_BOL_EventInviteDao::getInstance()->getTableName() . "` as `ei` ON ( `ei`.eventId = e.id ) "
-               . " WHERE 1 ORDER BY `e`.`startTimeStamp` DESC LIMIT :first, :count";
+               . " WHERE `e`.`endTimeStamp` < :time LIMIT :first, :count";
         
-        return $this->dbo->queryForObjectList($query, $this->getDtoClassName(), $params);
+        return $this->dbo->queryForObjectList($query, $this->getDtoClassName(), $params);       
+        
     }
     
     /**
