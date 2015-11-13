@@ -226,8 +226,7 @@ class EVENT_CTRL_Base extends OW_ActionController
 //                            ));
 //                        OW::getEventManager()->trigger($eventObj);
 //                    }
-                    
-                    BOL_AuthorizationService::getInstance()->trackAction('event', 'add_event');
+
 
                     
                     $serviceEvent = new OW_Event(EVENT_BOL_EventService::EVENT_AFTER_CREATE_EVENT, array(
@@ -237,6 +236,13 @@ class EVENT_CTRL_Base extends OW_ActionController
                         
                     ));
                     OW::getEventManager()->trigger($serviceEvent);
+
+                    $event = EVENT_BOL_EventService::getInstance()->findEvent($event->getId());
+
+                    if ( $event->status == EVENT_BOL_EventService::MODERATION_STATUS_ACTIVE )
+                    {
+                        BOL_AuthorizationService::getInstance()->trackAction('event', 'add_event');
+                    }
                     
                     $this->redirect(OW::getRouter()->urlForRoute('event.view', array('eventId' => $event->getId())));
                 }
