@@ -700,14 +700,14 @@ class EVENT_CLASS_EventHandler
             return;
         }
 
-        $eventData = EVENT_BOL_EventService::getInstance()->findEvent($params['entityId']);
+        $eventDto = EVENT_BOL_EventService::getInstance()->findEvent($params['entityId']);
 
-        if ( $event === null )
+        if ( $eventDto === null )
         {
             return;
         }
 
-        BOL_AuthorizationService::getInstance()->trackActionForUser($eventData->userId, 'event', 'add_event');
+        BOL_AuthorizationService::getInstance()->trackActionForUser($eventDto->userId, 'event', 'add_event');
     }
 
 
