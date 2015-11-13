@@ -685,6 +685,32 @@ class EVENT_CLASS_EventHandler
             }
         }
     }
+
+    public function afterContentApprove( OW_Event $event )
+    {
+        $params = $event->getParams();
+
+        if ( $params["entityType"] != EVENT_CLASS_ContentProvider::ENTITY_TYPE )
+        {
+            return;
+        }
+
+        if ( !$params["isNew"] )
+        {
+            return;
+        }
+
+        $eventDto = EVENT_BOL_EventService::getInstance()->findEvent($params['entityId']);
+
+        if ( $eventDto === null )
+        {
+            return;
+        }
+
+        BOL_AuthorizationService::getInstance()->trackActionForUser($eventDto->userId, 'event', 'add_event');
+    }
+
+
     
     
     
@@ -724,6 +750,8 @@ class EVENT_CLASS_EventHandler
         OW::getEventManager()->bind(EVENT_BOL_EventService::EVENT_ON_CHANGE_USER_STATUS, array($this, 'onChangeUserStatus'));
 
         OW::getEventManager()->bind('socialsharing.get_entity_info', array($this, 'sosialSharingGetEventInfo'));
+
+        OW::getEventManager()->bind("moderation.after_content_approve", array($this, "afterContentApprove"));
     }
 
     public function init()
