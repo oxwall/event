@@ -12,7 +12,7 @@ class Event_Cron extends OW_Cron
     {
         parent::__construct();
 
-        $this->addJob('clearInvitations', 20);
+        $this->addJob('clearInvitations', 0.001);
     }
 
     public function run()
@@ -23,14 +23,31 @@ class Event_Cron extends OW_Cron
     public function clearInvitations()
     {        
         $list = EVENT_BOL_EventService::getInstance()->findCronExpiredEvents(0, 1500);
-        
+
         if ( !empty($list) )
         {
             /* @var $event EVENT_BOL_Event */
             foreach ( $list as $event )
             {
                 EVENT_BOL_EventService::getInstance()->clearEventInvitations($event->id);
+
+                OW::getEventManager()->call('invitations.remove', array(
+                    'entityType' => 'event',
+                    'entityId' => $event->id
+                ));
+
+                OW::getEventManager()->call('invitations.remove', array(
+                    'entityType' => EVENT_CLASS_InvitationHandler::INVITATION_JOIN,
+                    'entityId' => $event->id
+                ));
+
+                OW::getEventManager()->call('notifications.remove', array(
+                    'entityType' => 'event',
+                    'entityId' => $event->id
+                ));
             }
         }
+
+
     }
 }
