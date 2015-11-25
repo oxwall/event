@@ -12,7 +12,7 @@ class Event_Cron extends OW_Cron
     {
         parent::__construct();
 
-        $this->addJob('clearInvitations', 0.001);
+        $this->addJob('clearInvitations', 20);
     }
 
     public function run()
