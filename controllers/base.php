@@ -294,7 +294,20 @@ class EVENT_CTRL_Base extends OW_ActionController
      */
     public function edit( $params )
     {
+        if( !OW::getUser()->isAuthenticated() )
+        {
+            throw new Redirect404Exception();
+        }
+
+        $userId = OW::getUser()->getId();
+
         $event = $this->getEventForParams($params);
+
+        if( $userId != $event->userId && $userId != 1 )
+        {
+            throw new Redirect404Exception();
+        }
+
         $language = OW::getLanguage();
         $form = new EventAddForm('event_edit');
 
