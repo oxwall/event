@@ -303,7 +303,7 @@ class EVENT_CTRL_Base extends OW_ActionController
 
         $event = $this->getEventForParams($params);
 
-        if( $userId != $event->userId && $userId != 1 )
+        if( $userId != $event->userId && !OW::getUser()->isAdmin() )
         {
             throw new Redirect404Exception();
         }
