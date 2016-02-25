@@ -492,8 +492,8 @@ class EVENT_CTRL_Base extends OW_ActionController
     public function delete( $params )
     {
         $event = $this->getEventForParams($params);
-
-        if ( !OW::getUser()->isAuthenticated() || ( OW::getUser()->getId() != $event->getUserId() && !OW::getUser()->isAuthorized('event') ) )
+        $key = md5($event->getId().OW_PASSWORD_SALT);
+        if ( !OW::getUser()->isAuthenticated() || ( OW::getUser()->getId() != $event->getUserId() && !OW::getUser()->isAuthorized('event') ) || $key != $_GET['key'] )
         {
             throw new Redirect403Exception();
         }
@@ -548,11 +548,12 @@ class EVENT_CTRL_Base extends OW_ActionController
         
         if ( OW::getUser()->isAuthorized('event') || OW::getUser()->getId() == $event->getUserId() )
         {
+            $key = md5($event->getId().OW_PASSWORD_SALT);
             $buttons = array(
                 'edit' => array('url' => OW::getRouter()->urlForRoute('event.edit', array('eventId' => $event->getId())), 'label' => OW::getLanguage()->text('event', 'edit_button_label')),
                 'delete' =>
                 array(
-                    'url' => OW::getRouter()->urlForRoute('event.delete', array('eventId' => $event->getId())),
+                    'url' => OW::getRouter()->urlForRoute('event.delete', array('eventId' => $event->getId())).'?key='.$key,
                     'label' => OW::getLanguage()->text('event', 'delete_button_label'),
                     'confirmMessage' => OW::getLanguage()->text('event', 'delete_confirm_message')
                 )
