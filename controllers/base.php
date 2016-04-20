@@ -1600,13 +1600,7 @@ class EventTimeField extends FormElement
     {
         $jsString = "var formElement = new OwFormElement('" . $this->getId() . "', '" . $this->getName() . "');";
 
-        /** @var $value Validator  */
-        foreach ( $this->validators as $value )
-        {
-            $jsString .= "formElement.addValidator(" . $value->getJsValidator() . ");";
-        }
-
-        return $jsString;
+        return $jsString.$this->generateValidatorAndFilterJsCode("formElement");
     }
 
     private function getTimeString( $hour, $minute )
