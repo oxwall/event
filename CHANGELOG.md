@@ -1,3 +1,6 @@
+# Version 1.8.3 (10600)
+- added ALT HTML attribute for event thumbs
+
 # Version 1.8.2 (10400)
 - fixed a bug allowing logged out users to edit events of other users;
 
