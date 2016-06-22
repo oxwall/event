@@ -109,6 +109,24 @@ class EVENT_BOL_EventDao extends OW_BaseDao
     /**
      * Returns latest public events.
      *
+     * @param integer $count
+     * @param integer $first
+     * @return array
+     */
+    public function findAllLatestPublicEvents( $count, $first = 0 )
+    {
+        $example = new OW_Example();
+        $example->andFieldEqual(self::WHO_CAN_VIEW, self::VALUE_WHO_CAN_VIEW_ANYBODY);
+        $example->andFieldEqual(self::STATUS, 1);
+        $example->setOrder(self::CREATE_TIME_STAMP . ' DESC');
+        $example->setLimitClause($first, $count);
+
+        return $this->findListByExample($example);
+    }
+
+    /**
+     * Returns latest public events.
+     *
      * @param integer $first
      * @param integer $count
      * @return array
