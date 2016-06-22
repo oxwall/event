@@ -710,10 +710,94 @@ class EVENT_CLASS_EventHandler
         BOL_AuthorizationService::getInstance()->trackActionForUser($eventDto->userId, 'event', 'add_event');
     }
 
+    /**
+     * Get sitemap urls
+     *
+     * @param OW_Event $event
+     * @return void
+     */
+    public function onSitemapGetUrls( OW_Event $event )
+    {
+        $params = $event->getParams();
 
-    
-    
-    
+        if ( OW::getUser()->isAuthorized('event', 'view_event') )
+        {
+            $urls = [];
+            $urlsCount = 0;
+            $globalLimit = (int) $params['limit'];
+            $localLimit  = 500;
+            $offset = 0;
+
+            do
+            {
+                $isDataEmpty = true;
+
+                if ( $urlsCount + $localLimit > $globalLimit )
+                {
+                    $localLimit = $globalLimit < $localLimit
+                        ? $globalLimit
+                        : $globalLimit - $urlsCount;
+                }
+
+                switch ( $params['entity'] )
+                {
+                    case 'event_participants' :
+                        $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEvents($localLimit, $offset);
+
+                        if ( $eventList )
+                        {
+                            foreach ( $eventList as $eventItem )
+                            {
+                                $urls[] = OW::getRouter()->urlForRoute('event.main_user_list', array(
+                                    'eventId' => $eventItem->id
+                                ));
+                            }
+
+                            $isDataEmpty = count($eventList) != $localLimit;
+                        }
+                        break;
+
+                    case 'event' :
+                        $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEvents($localLimit, $offset);
+
+                        if ( $eventList )
+                        {
+                            foreach ( $eventList as $eventItem )
+                            {
+                                $urls[] = OW::getRouter()->urlForRoute('event.view', array(
+                                    'eventId' => $eventItem->id
+                                ));
+                            }
+
+                            $isDataEmpty = count($eventList) != $localLimit;
+                        }
+                        break;
+
+                    case 'event_list' :
+                        $urls = array(
+                            OW::getRouter()->urlForRoute('event.main_menu_route'),
+                            OW::getRouter()->urlForRoute('event.view_event_list', array(
+                                'list' =>  'past'
+                            )),
+                            OW::getRouter()->urlForRoute('event.view_event_list', array(
+                                'list' =>  'latest'
+                            ))
+                        );
+                        break;
+                }
+
+                $urlsCount = count($urls);
+                $offset += $localLimit;
+            }
+            while ($urlsCount < $globalLimit && !$isDataEmpty);
+
+            if ( $urls )
+            {
+                $event->setData($urls);
+            }
+        }
+    }
+
     public function genericInit()
     {
         OW::getEventManager()->bind('notifications.collect_actions', array($this, 'onNotifyActions'));
@@ -752,6 +836,7 @@ class EVENT_CLASS_EventHandler
         OW::getEventManager()->bind('socialsharing.get_entity_info', array($this, 'sosialSharingGetEventInfo'));
 
         OW::getEventManager()->bind("moderation.after_content_approve", array($this, "afterContentApprove"));
+        OW::getEventManager()->bind("base.sitemap.get_urls", array($this, "onSitemapGetUrls"));
     }
 
     public function init()

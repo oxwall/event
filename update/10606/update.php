@@ -28,10 +28,12 @@
  * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-OW::getNavigation()->deleteMenuItem('event', 'main_menu_item');
 
-BOL_ComponentAdminService::getInstance()->deleteWidget('EVENT_CMP_UpcomingEvents');
-BOL_ComponentAdminService::getInstance()->deleteWidget('EVENT_CMP_ProfilePageWidget');
+// register sitemap entities
+Updater::getSeoService()->addSitemapEntity('event', 'event_sitemap', 'event', array(
+    'event_list',
+    'event',
+    'event_participants'
+));
 
-// remove from sitemap
-BOL_SeoService::getInstance()->removeSitemapEntity('event');
+Updater::getLanguageService()->importPrefixFromZip(__DIR__ . DS . 'langs.zip', 'event');
