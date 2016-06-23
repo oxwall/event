@@ -722,74 +722,46 @@ class EVENT_CLASS_EventHandler
 
         if ( OW::getUser()->isAuthorized('event', 'view_event') )
         {
-            $urls = [];
-            $urlsCount = 0;
-            $globalLimit = (int) $params['limit'];
-            $localLimit  = 500;
-            $offset = 0;
+            $offset = (int) $params['offset'];
+            $limit  = (int) $params['limit'];
+            $urls   = array();
 
-            do
+            switch ( $params['entity'] )
             {
-                $isDataEmpty = true;
+                case 'event_participants' :
+                    $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEvents($limit, $offset);
 
-                if ( $urlsCount + $localLimit > $globalLimit )
-                {
-                    $localLimit = $globalLimit < $localLimit
-                        ? $globalLimit
-                        : $globalLimit - $urlsCount;
-                }
+                    foreach ( $eventList as $eventItem )
+                    {
+                        $urls[] = OW::getRouter()->urlForRoute('event.main_user_list', array(
+                            'eventId' => $eventItem->id
+                        ));
+                    }
+                    break;
 
-                switch ( $params['entity'] )
-                {
-                    case 'event_participants' :
-                        $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEvents($localLimit, $offset);
+                case 'event' :
+                    $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEvents($limit, $offset);
 
-                        if ( $eventList )
-                        {
-                            foreach ( $eventList as $eventItem )
-                            {
-                                $urls[] = OW::getRouter()->urlForRoute('event.main_user_list', array(
-                                    'eventId' => $eventItem->id
-                                ));
-                            }
+                    foreach ( $eventList as $eventItem )
+                    {
+                        $urls[] = OW::getRouter()->urlForRoute('event.view', array(
+                            'eventId' => $eventItem->id
+                        ));
+                    }
+                    break;
 
-                            $isDataEmpty = count($eventList) != $localLimit;
-                        }
-                        break;
+                case 'event_list' :
+                    $urls[] = OW::getRouter()->urlForRoute('event.main_menu_route');
 
-                    case 'event' :
-                        $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEvents($localLimit, $offset);
+                    $urls[] = OW::getRouter()->urlForRoute('event.view_event_list', array(
+                        'list' =>  'past'
+                    ));
 
-                        if ( $eventList )
-                        {
-                            foreach ( $eventList as $eventItem )
-                            {
-                                $urls[] = OW::getRouter()->urlForRoute('event.view', array(
-                                    'eventId' => $eventItem->id
-                                ));
-                            }
-
-                            $isDataEmpty = count($eventList) != $localLimit;
-                        }
-                        break;
-
-                    case 'event_list' :
-                        $urls = array(
-                            OW::getRouter()->urlForRoute('event.main_menu_route'),
-                            OW::getRouter()->urlForRoute('event.view_event_list', array(
-                                'list' =>  'past'
-                            )),
-                            OW::getRouter()->urlForRoute('event.view_event_list', array(
-                                'list' =>  'latest'
-                            ))
-                        );
-                        break;
-                }
-
-                $urlsCount = count($urls);
-                $offset += $localLimit;
+                    $urls[] = OW::getRouter()->urlForRoute('event.view_event_list', array(
+                        'list' =>  'latest'
+                    ));
+                    break;
             }
-            while ($urlsCount < $globalLimit && !$isDataEmpty);
 
             if ( $urls )
             {
