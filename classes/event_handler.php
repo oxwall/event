@@ -711,9 +711,114 @@ class EVENT_CLASS_EventHandler
     }
 
 
-    
-    
-    
+    /**
+     * Get sitemap urls
+     *
+     * @param OW_Event $event
+     * @return void
+     */
+    public function onSitemapGetUrls( OW_Event $event )
+    {
+        $params = $event->getParams();
+
+        if ( OW::getUser()->isAuthorized('event', 'view_event') )
+        {
+            $offset = (int) $params['offset'];
+            $limit  = (int) $params['limit'];
+            $urls   = array();
+
+            switch ( $params['entity'] )
+            {
+                case 'event_participants' :
+                    $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEventsIds($offset, $limit);
+
+                    foreach ( $eventList as $eventId )
+                    {
+                        $urls[] = OW::getRouter()->urlForRoute('event.main_user_list', array(
+                            'eventId' => $eventId
+                        ));
+                    }
+                    break;
+
+                case 'event' :
+                    $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEventsIds($offset, $limit);
+
+                    foreach ( $eventList as $eventId )
+                    {
+                        $urls[] = OW::getRouter()->urlForRoute('event.view', array(
+                            'eventId' => $eventId
+                        ));
+                    }
+                    break;
+
+                case 'event_list' :
+                    $urls[] = OW::getRouter()->urlForRoute('event.main_menu_route');
+
+                    $urls[] = OW::getRouter()->urlForRoute('event.view_event_list', array(
+                        'list' =>  'past'
+                    ));
+
+                    $urls[] = OW::getRouter()->urlForRoute('event.view_event_list', array(
+                        'list' =>  'latest'
+                    ));
+                    break;
+            }
+
+            if ( $urls )
+            {
+                $event->setData($urls);
+            }
+        }
+    }
+
+    public function onCollectMetaData( BASE_CLASS_EventCollector $e )
+    {
+        $language = OW::getLanguage();
+
+        $items = array(
+            array(
+                "entityKey" => "eventsList",
+                "entityLabel" => $language->text("event", "seo_meta_events_list_label"),
+                "iconClass" => "ow_ic_calendar",
+                "langs" => array(
+                    "title" => "event+meta_title_events_list",
+                    "description" => "event+meta_desc_events_list",
+                    "keywords" => "event+meta_keywords_events_list"
+                ),
+                "vars" => array("site_name", "event_list")
+            ),
+            array(
+                "entityKey" => "eventView",
+                "entityLabel" => $language->text("event", "seo_meta_event_view_label"),
+                "iconClass" => "ow_ic_calendar",
+                "langs" => array(
+                    "title" => "event+meta_title_event_view",
+                    "description" => "event+meta_desc_event_view",
+                    "keywords" => "event+meta_keywords_event_view"
+                ),
+                "vars" => array("event_title", "event_description", "site_name")
+            ),
+            array(
+                "entityKey" => "eventUsers",
+                "entityLabel" => $language->text("event", "seo_meta_event_users_label"),
+                "iconClass" => "ow_ic_groups",
+                "langs" => array(
+                    "title" => "event+meta_title_event_users",
+                    "description" => "event+meta_desc_event_users",
+                    "keywords" => "event+meta_keywords_event_users"
+                ),
+                "vars" => array("event_title", "event_description", "site_name")
+            ),
+        );
+
+        foreach ($items as &$item)
+        {
+            $item["sectionLabel"] = $language->text("event", "seo_meta_section");
+            $item["sectionKey"] = "event";
+            $e->add($item);
+        }
+    }
+
     public function genericInit()
     {
         OW::getEventManager()->bind('notifications.collect_actions', array($this, 'onNotifyActions'));
@@ -752,11 +857,13 @@ class EVENT_CLASS_EventHandler
         OW::getEventManager()->bind('socialsharing.get_entity_info', array($this, 'sosialSharingGetEventInfo'));
 
         OW::getEventManager()->bind("moderation.after_content_approve", array($this, "afterContentApprove"));
+        OW::getEventManager()->bind("base.sitemap.get_urls", array($this, "onSitemapGetUrls"));
     }
 
     public function init()
     {
         EVENT_CLASS_InvitationHandler::getInstance()->init();
+        OW::getEventManager()->bind("base.collect_seo_meta_data", array($this, 'onCollectMetaData'));
         //OW::getEventManager()->bind('event.get_content_menu', 'getContentMenu');
     }
 }
