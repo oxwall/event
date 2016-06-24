@@ -729,23 +729,23 @@ class EVENT_CLASS_EventHandler
             switch ( $params['entity'] )
             {
                 case 'event_participants' :
-                    $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEvents($limit, $offset);
+                    $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEventsIds($offset, $limit);
 
-                    foreach ( $eventList as $eventItem )
+                    foreach ( $eventList as $eventId )
                     {
                         $urls[] = OW::getRouter()->urlForRoute('event.main_user_list', array(
-                            'eventId' => $eventItem->id
+                            'eventId' => $eventId
                         ));
                     }
                     break;
 
                 case 'event' :
-                    $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEvents($limit, $offset);
+                    $eventList = EVENT_BOL_EventService::getInstance()->findAllLatestPublicEventsIds($offset, $limit);
 
-                    foreach ( $eventList as $eventItem )
+                    foreach ( $eventList as $eventId )
                     {
                         $urls[] = OW::getRouter()->urlForRoute('event.view', array(
-                            'eventId' => $eventItem->id
+                            'eventId' => $eventId
                         ));
                     }
                     break;
