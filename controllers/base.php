@@ -689,6 +689,7 @@ class EVENT_CTRL_Base extends OW_ActionController
         $this->assign("toolbar", $ev->getData());
 
         $params = array(
+            "sectionKey" => "event",
             "entityKey" => "eventView",
             "title" => "event+meta_title_event_view",
             "description" => "event+meta_desc_event_view",
@@ -885,6 +886,7 @@ class EVENT_CTRL_Base extends OW_ActionController
 
         // meta info
         $params = array(
+            "sectionKey" => "event",
             "entityKey" => "eventsList",
             "title" => "event+meta_title_events_list",
             "description" => "event+meta_desc_events_list",
@@ -1107,6 +1109,7 @@ class EVENT_CTRL_Base extends OW_ActionController
 
         // meta info
         $params = array(
+            "sectionKey" => "event",
             "entityKey" => "eventUsers",
             "title" => "event+meta_title_event_users",
             "description" => "event+meta_desc_event_users",
