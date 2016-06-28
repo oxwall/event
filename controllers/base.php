@@ -571,9 +571,9 @@ class EVENT_CTRL_Base extends OW_ActionController
         }
         
         $this->setPageHeading($event->getTitle(). $moderationStatus);
-        $this->setPageTitle(OW::getLanguage()->text('event', 'event_view_page_heading', array('event_title' => $event->getTitle())));
+//        $this->setPageTitle(OW::getLanguage()->text('event', 'event_view_page_heading', array('event_title' => $event->getTitle())));
         $this->setPageHeadingIconClass('ow_ic_calendar');
-        OW::getDocument()->setDescription(UTIL_String::truncate(strip_tags($event->getDescription()), 200, '...'));
+//        OW::getDocument()->setDescription(UTIL_String::truncate(strip_tags($event->getDescription()), 200, '...'));
 
         $infoArray = array(
             'id' => $event->getId(),
@@ -679,14 +679,25 @@ class EVENT_CTRL_Base extends OW_ActionController
         }
         
         $this->addComponent('userListCmp', new EVENT_CMP_EventUsers($event->getId()));
-        
-        $event = new BASE_CLASS_EventCollector(EVENT_BOL_EventService::EVENT_COLLECT_TOOLBAR, array(
+
+        $ev = new BASE_CLASS_EventCollector(EVENT_BOL_EventService::EVENT_COLLECT_TOOLBAR, array(
             "event" => $event
         ));
+
+        OW::getEventManager()->trigger($ev);
         
-        OW::getEventManager()->trigger($event);
-        
-        $this->assign("toolbar", $event->getData());
+        $this->assign("toolbar", $ev->getData());
+
+        $params = array(
+            "sectionKey" => "event",
+            "entityKey" => "eventView",
+            "title" => "event+meta_title_event_view",
+            "description" => "event+meta_desc_event_view",
+            "keywords" => "event+meta_keywords_event_view",
+            "vars" => array( "event_title" => $event->getTitle(), "event_description" => $event->getDescription() )
+        );
+
+        OW::getEventManager()->trigger(new OW_Event("base.provide_page_meta_info", $params));
     }
 
     /**
@@ -723,7 +734,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                 }
 
                 $this->setPageHeading($language->text('event', 'event_created_by_me_page_heading'));
-                $this->setPageTitle($language->text('event', 'event_created_by_me_page_title'));
+//                $this->setPageTitle($language->text('event', 'event_created_by_me_page_title'));
                 $this->setPageHeadingIconClass('ow_ic_calendar');
                 $events = $this->eventService->findUserEvents(OW::getUser()->getId(), $page, null, true);
                 $eventsCount = $this->eventService->findLatestEventsCount();
@@ -737,7 +748,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                 $contentMenu = EVENT_BOL_EventService::getInstance()->getContentMenu();
                 $this->addComponent('contentMenu', $contentMenu);
                 $this->setPageHeading($language->text('event', 'event_joined_by_me_page_heading'));
-                $this->setPageTitle($language->text('event', 'event_joined_by_me_page_title'));
+//                $this->setPageTitle($language->text('event', 'event_joined_by_me_page_title'));
                 $this->setPageHeadingIconClass('ow_ic_calendar');
 
                 $events = $this->eventService->findUserParticipatedEvents(OW::getUser()->getId(), $page, null, true);
@@ -749,7 +760,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                 $contentMenu->getElement('latest')->setActive(true);
                 $this->addComponent('contentMenu', $contentMenu);
                 $this->setPageHeading($language->text('event', 'latest_events_page_heading'));
-                $this->setPageTitle($language->text('event', 'latest_events_page_title'));
+//                $this->setPageTitle($language->text('event', 'latest_events_page_title'));
                 $this->setPageHeadingIconClass('ow_ic_calendar');
                 OW::getDocument()->setDescription($language->text('event', 'latest_events_page_desc'));
                 $events = $this->eventService->findPublicEvents($page);
@@ -781,7 +792,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                 $displayName = BOL_UserService::getInstance()->getDisplayName($user->getId());
 
                 $this->setPageHeading($language->text('event', 'user_participated_events_page_heading', array('display_name' => $displayName)));
-                $this->setPageTitle($language->text('event', 'user_participated_events_page_title', array('display_name' => $displayName)));
+//                $this->setPageTitle($language->text('event', 'user_participated_events_page_title', array('display_name' => $displayName)));
                 OW::getDocument()->setDescription($language->text('event', 'user_participated_events_page_desc', array('display_name' => $displayName)));
                 $this->setPageHeadingIconClass('ow_ic_calendar');
                 $events = $this->eventService->findUserParticipatedPublicEvents($user->getId(), $page);
@@ -792,9 +803,9 @@ class EVENT_CTRL_Base extends OW_ActionController
                 $contentMenu = EVENT_BOL_EventService::getInstance()->getContentMenu();
                 $this->addComponent('contentMenu', $contentMenu);
                 $this->setPageHeading($language->text('event', 'past_events_page_heading'));
-                $this->setPageTitle($language->text('event', 'past_events_page_title'));
+//                $this->setPageTitle($language->text('event', 'past_events_page_title'));
                 $this->setPageHeadingIconClass('ow_ic_calendar');
-                OW::getDocument()->setDescription($language->text('event', 'past_events_page_desc'));
+//                OW::getDocument()->setDescription($language->text('event', 'past_events_page_desc'));
                 $events = $this->eventService->findPublicEvents($page, null, true);
                 $eventsCount = $this->eventService->findPublicEventsCount(true);
                 break;
@@ -810,7 +821,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                 $contentMenu = EVENT_BOL_EventService::getInstance()->getContentMenu();
                 $this->addComponent('contentMenu', $contentMenu);
                 $this->setPageHeading($language->text('event', 'invited_events_page_heading'));
-                $this->setPageTitle($language->text('event', 'invited_events_page_title'));
+//                $this->setPageTitle($language->text('event', 'invited_events_page_title'));
                 $this->setPageHeadingIconClass('ow_ic_calendar');
                 $events = $this->eventService->findUserInvitedEvents(OW::getUser()->getId(), $page);
                 $eventsCount = $this->eventService->findUserInvitedEventsCount(OW::getUser()->getId());
@@ -872,6 +883,19 @@ class EVENT_CTRL_Base extends OW_ActionController
         $this->assign('toolbarList', $toolbarList);
         $this->assign('add_new_url', OW::getRouter()->urlForRoute('event.add'));
         OW::getNavigation()->activateMenuItem(OW_Navigation::MAIN, 'event', 'main_menu_item');
+
+        // meta info
+        $params = array(
+            "sectionKey" => "event",
+            "entityKey" => "eventsList",
+            "title" => "event+meta_title_events_list",
+            "description" => "event+meta_desc_events_list",
+            "keywords" => "event+meta_keywords_events_list",
+            "vars" => array( "event_list" => $language->text("event", str_replace("-", "_", trim($params["list"]))."_events_page_title") )
+        );
+
+        OW::getEventManager()->trigger(new OW_Event("base.provide_page_meta_info", $params));
+
     }
 
     public function inviteListAccept( $params )
@@ -1077,12 +1101,24 @@ class EVENT_CTRL_Base extends OW_ActionController
         $this->addComponent('users', new EVENT_CMP_EventUsersList($userDtoList, $eventUsersCount, $configs[EVENT_BOL_EventService::CONF_EVENT_USERS_COUNT_ON_PAGE], true));
 
         $this->setPageHeading($language->text('event', 'user_list_page_heading_' . $status, array('eventTitle' => $event->getTitle())));
-        $this->setPageTitle($language->text('event', 'user_list_page_heading_' . $status, array('eventTitle' => $event->getTitle())));
-        OW::getDocument()->setDescription($language->text('event', 'user_list_page_desc_' . $status, array('eventTitle' => $event->getTitle())));
+//        $this->setPageTitle($language->text('event', 'user_list_page_heading_' . $status, array('eventTitle' => $event->getTitle())));
+//        OW::getDocument()->setDescription($language->text('event', 'user_list_page_desc_' . $status, array('eventTitle' => $event->getTitle())));
 
         OW::getNavigation()->activateMenuItem(OW_Navigation::MAIN, 'event', 'main_menu_item');
-        
         $this->assign("eventId", $event->id);
+
+        // meta info
+        $params = array(
+            "sectionKey" => "event",
+            "entityKey" => "eventUsers",
+            "title" => "event+meta_title_event_users",
+            "description" => "event+meta_desc_event_users",
+            "keywords" => "event+meta_keywords_event_users",
+            "vars" => array("event_title" => $event->getTitle())
+        );
+
+        OW::getEventManager()->trigger(new OW_Event("base.provide_page_meta_info", $params));
+
     }
 
     public function privateEvent( $params )
