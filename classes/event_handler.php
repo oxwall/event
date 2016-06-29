@@ -721,7 +721,7 @@ class EVENT_CLASS_EventHandler
     {
         $params = $event->getParams();
 
-        if ( OW::getUser()->isAuthorized('event', 'view_event') )
+        if ( BOL_AuthorizationService::getInstance()->isActionAuthorizedForGuest('event', 'view_event') )
         {
             $offset = (int) $params['offset'];
             $limit  = (int) $params['limit'];
