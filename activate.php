@@ -42,3 +42,10 @@ BOL_ComponentAdminService::getInstance()->addWidgetToPosition($placeWidget, BOL_
 require_once dirname(__FILE__) . DS .  'classes' . DS . 'credits.php';
 $credits = new EVENT_CLASS_Credits();
 $credits->triggerCreditActionsAdd();
+
+// register sitemap entities
+BOL_SeoService::getInstance()->addSitemapEntity('event', 'event_sitemap', 'event', array(
+    'event_list',
+    'event',
+    'event_participants'
+));

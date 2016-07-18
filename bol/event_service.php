@@ -423,6 +423,18 @@ final class EVENT_BOL_EventService
     }
 
     /**
+     * Returns all latest events list ids
+     *
+     * @param integer $first
+     * @param integer $count
+     * @return array<EVENT_BOL_Event>
+     */
+    public function findAllLatestPublicEventsIds( $first, $count )
+    {
+        return $this->eventDao->findAllLatestPublicEventsIds($first, $count);
+    }
+
+    /**
      * Returns latest events list.
      *
      * @param integer $page
