@@ -30,9 +30,9 @@
  */
 
 /**
- * @author Sardar Madumarov <madumarov@gmail.com>, Podyachev Evgeny <joker.OW2@gmail.com>
+ * @author Sardar Madumarov <madumarov@gmail.com>, Podyachev Evgeny <joker.OW2@gmail.com>, Sergey Pryadkin <GiperProger@gmail.com>
  * @package ow_plugins.event.controllers
- * @since 1.0
+ * @since 1.8.5
  */
 class EVENT_CTRL_Base extends OW_ActionController
 {
@@ -68,7 +68,7 @@ class EVENT_CTRL_Base extends OW_ActionController
             throw new AuthorizationException($status['msg']);
         }
         
-        $form = new EventAddForm('event_add');
+        $form = new EVENT_CLASS_EventAddForm('event_add');
 
         if ( date('n', time()) == 12 && date('j', time()) == 31 )
         {
@@ -309,7 +309,7 @@ class EVENT_CTRL_Base extends OW_ActionController
         }
 
         $language = OW::getLanguage();
-        $form = new EventAddForm('event_edit');
+        $form = new EVENT_CLASS_EventAddForm('event_edit');
 
         $form->getElement('title')->setValue($event->getTitle());
         $form->getElement('desc')->setValue($event->getDescription());
@@ -597,7 +597,7 @@ class EVENT_CTRL_Base extends OW_ActionController
             {
                 $this->assign('currentStatus', OW::getLanguage()->text('event', 'user_status_label_' . $eventUser->getStatus()));
             }
-            $this->addForm(new AttendForm($event->getId(), $cmpId));
+            $this->addForm(new EVENT_CLASS_AttendForm($event->getId(), $cmpId));
 
             $onloadJs = "
                 var \$context = $('#" . $cmpId . "');
@@ -1362,403 +1362,10 @@ class EVENT_CTRL_Base extends OW_ActionController
     }
 }
 
-/**
- * Event attend form
- * 
- * @author Sardar Madumarov <madumarov@gmail.com>
- * @package ow_plugins.event.forms
- * @since 1.0
- */
-class AttendForm extends Form
-{
 
-    public function __construct( $eventId, $contId )
-    {
-        parent::__construct('event_attend');
-        $this->setAction(OW::getRouter()->urlFor('EVENT_CTRL_Base', 'attendFormResponder'));
-        $this->setAjax();
-        $hidden = new HiddenField('attend_status');
-        $this->addElement($hidden);
-        $eventIdField = new HiddenField('eventId');
-        $eventIdField->setValue($eventId);
-        $this->addElement($eventIdField);
-        $this->setAjaxResetOnSuccess(false);
-        $this->bindJsFunction(Form::BIND_SUCCESS, "function(data){
-            var \$context = $('#" . $contId . "');
 
-            
 
-            if(data.messageType == 'error'){
-                OW.error(data.message);
-            }
-            else{
-                $('.current_status span.status', \$context).empty().html(data.currentLabel);
-                $('.current_status span.link', \$context).css({display:'inline'});
-                $('.attend_buttons .buttons', \$context).fadeOut(500);
 
-                if ( data.eventId != 'undefuned' )
-                {
-                    OW.loadComponent('EVENT_CMP_EventUsers', {eventId: data.eventId},
-                    {
-                      onReady: function( html ){
-                         $('.userList', \$context).empty().html(html);
 
-                      }
-                    });
-                }
 
-                $('.userList', \$context).empty().html(data.eventUsersCmp);
-                OW.trigger('event_notifications_update', {count:data.newInvCount});
-                OW.info(data.message);
-            }
-        }");
-    }
-}
 
-
-/**
- * Add new event form
- * 
- * @author Sardar Madumarov <madumarov@gmail.com>
- * @package ow_plugins.event.forms
- * @since 1.0
- */
-class EventAddForm extends Form
-{
-
-    const EVENT_NAME = 'event.event_add_form.get_element';
-
-    public function __construct( $name )
-    {
-        parent::__construct($name);
-
-        $militaryTime = Ow::getConfig()->getValue('base', 'military_time');
-
-        $language = OW::getLanguage();
-
-        $currentYear = date('Y', time());
-
-        $title = new TextField('title');
-        $title->setRequired();
-        $title->setLabel($language->text('event', 'add_form_title_label'));
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'title' ), $title);
-        OW::getEventManager()->trigger($event);
-        $title = $event->getData();
-
-        $this->addElement($title);
-
-        $startDate = new DateField('start_date');
-        $startDate->setMinYear($currentYear);
-        $startDate->setMaxYear($currentYear + 5);
-        $startDate->setRequired();
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'start_date' ), $startDate);
-        OW::getEventManager()->trigger($event);
-        $startDate = $event->getData();
-
-        $this->addElement($startDate);
-
-        $startTime = new EventTimeField('start_time');
-        $startTime->setMilitaryTime($militaryTime);
-        
-        if ( !empty($_POST['endDateFlag']) )
-        {
-            $startTime->setRequired();
-        }
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'start_time' ), $startTime);
-        OW::getEventManager()->trigger($event);
-        $startTime = $event->getData();
-
-        $this->addElement($startTime);
-
-        $endDate = new DateField('end_date');
-        $endDate->setMinYear($currentYear);
-        $endDate->setMaxYear($currentYear + 5);
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'end_date' ), $endDate);
-        OW::getEventManager()->trigger($event);
-        $endDate = $event->getData();
-
-        $this->addElement($endDate);
-
-        $endTime = new EventTimeField('end_time');
-        $endTime->setMilitaryTime($militaryTime);
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'end_time' ), $endTime);
-        OW::getEventManager()->trigger($event);
-        $endTime = $event->getData();
-
-        $this->addElement($endTime);
-
-        $location = new TextField('location');
-        $location->setRequired();
-        $location->setLabel($language->text('event', 'add_form_location_label'));
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'location' ), $location);
-        OW::getEventManager()->trigger($event);
-        $location = $event->getData();
-
-        $this->addElement($location);
-
-        $whoCanView = new RadioField('who_can_view');
-        $whoCanView->setRequired();
-        $whoCanView->addOptions(
-            array(
-                '1' => $language->text('event', 'add_form_who_can_view_option_anybody'),
-                '2' => $language->text('event', 'add_form_who_can_view_option_invit_only')
-            )
-        );
-        $whoCanView->setLabel($language->text('event', 'add_form_who_can_view_label'));
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'who_can_view' ), $whoCanView);
-        OW::getEventManager()->trigger($event);
-        $whoCanView = $event->getData();
-
-        $this->addElement($whoCanView);
-
-        $whoCanInvite = new RadioField('who_can_invite');
-        $whoCanInvite->setRequired();
-        $whoCanInvite->addOptions(
-            array(
-                EVENT_BOL_EventService::CAN_INVITE_PARTICIPANT => $language->text('event', 'add_form_who_can_invite_option_participants'),
-                EVENT_BOL_EventService::CAN_INVITE_CREATOR => $language->text('event', 'add_form_who_can_invite_option_creator')
-            )
-        );
-        $whoCanInvite->setLabel($language->text('event', 'add_form_who_can_invite_label'));
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'who_can_invite' ), $whoCanInvite);
-        OW::getEventManager()->trigger($event);
-        $whoCanInvite = $event->getData();
-
-        $this->addElement($whoCanInvite);
-
-        $submit = new Submit('submit');
-        $submit->setValue($language->text('event', 'add_form_submit_label'));
-        $this->addElement($submit);
-
-        $desc = new WysiwygTextarea('desc');
-        $desc->setLabel($language->text('event', 'add_form_desc_label'));
-        $desc->setRequired();
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'desc' ), $desc);
-        OW::getEventManager()->trigger($event);
-        $desc = $event->getData();
-
-        $this->addElement($desc);
-
-        $imageField = new FileField('image');
-        $imageField->setLabel($language->text('event', 'add_form_image_label'));
-        $this->addElement($imageField);
-
-        $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'image' ), $imageField);
-        OW::getEventManager()->trigger($event);
-        $imageField = $event->getData();
-
-        $this->setEnctype(Form::ENCTYPE_MULTYPART_FORMDATA);
-    }
-}
-
-/**
- * Form element: CheckboxField.
- *
- * @author Sardar Madumarov <madumarov@gmail.com>
- * @package ow_core
- * @since 1.0
- */
-class EventTimeField extends FormElement
-{
-    private $militaryTime;
-
-    private $allDay = false;
-
-    /**
-     * Constructor.
-     *
-     * @param string $name
-     */
-    public function __construct( $name )
-    {
-        parent::__construct($name);
-        $this->militaryTime = false;
-    }
-
-    public function setMilitaryTime( $militaryTime )
-    {
-        $this->militaryTime = (bool) $militaryTime;
-    }
-
-    public function setValue( $value )
-    {
-        if ( $value === null )
-        {
-            $this->value = null;
-        }
-
-        $this->allDay = false;
-        
-        if ( $value === 'all_day' )
-        {
-            $this->allDay = true;
-            $this->value = null;
-            return;
-        }
-
-        if ( is_array($value) && isset($value['hour']) && isset($value['minute']) )
-        {
-            $this->value = array_map('intval', $value);
-        }
-
-        if ( is_string($value) && strstr($value, ':') )
-        {
-            $parts = explode(':', $value);
-            $this->value['hour'] = (int) $parts[0];
-            $this->value['minute'] = (int) $parts[1];
-        }
-    }
-
-    public function getValue()
-    {
-        if ( $this->allDay === true )
-        {
-            return 'all_day';
-        }
-
-        return $this->value;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getElementJs()
-    {
-        $jsString = "var formElement = new OwFormElement('" . $this->getId() . "', '" . $this->getName() . "');";
-
-        return $jsString.$this->generateValidatorAndFilterJsCode("formElement");
-    }
-
-    private function getTimeString( $hour, $minute )
-    {
-        if ( $this->militaryTime )
-        {
-            $hour = $hour < 10 ? '0' . $hour : $hour;
-            return $hour . ':' . $minute;
-        }
-        else
-        {
-            if ( $hour == 12 )
-            {
-                $dp = 'pm';
-            }
-            else if ( $hour > 12 )
-            {
-                $hour = $hour - 12;
-                $dp = 'pm';
-            }
-            else
-            {
-                $dp = 'am';
-            }
-
-            $hour = $hour < 10 ? '0' . $hour : $hour;
-            return $hour . ':' . $minute . $dp;
-        }
-    }
-
-    /**
-     * @see FormElement::renderInput()
-     *
-     * @param array $params
-     * @return string
-     */
-    public function renderInput( $params = null )
-    {
-        parent::renderInput($params);
-        
-        for ( $hour = 0; $hour <= 23; $hour++ )
-        {
-            $valuesArray[$hour . ':0'] = array('label' => $this->getTimeString($hour, '00'), 'hour' => $hour, 'minute' => 0);
-            $valuesArray[$hour . ':30'] = array('label' => $this->getTimeString($hour, '30'), 'hour' => $hour, 'minute' => 30);
-        }
-
-        $optionsString = UTIL_HtmlTag::generateTag('option', array('value' => ""), true, OW::getLanguage()->text('event', 'time_field_invitation_label'));
-
-        $allDayAttrs = array( 'value' => "all_day"  );
-        
-        if ( $this->allDay )
-        {
-            $allDayAttrs['selected'] = 'selected';
-        }
-        
-        $optionsString = UTIL_HtmlTag::generateTag('option', $allDayAttrs, true, OW::getLanguage()->text('event', 'all_day'));
-
-        foreach ( $valuesArray as $value => $labelArr )
-        {
-            $attrs = array('value' => $value);
-
-            if ( !empty($this->value) && $this->value['hour'] === $labelArr['hour'] && $this->value['minute'] === $labelArr['minute'] )
-            {
-                $attrs['selected'] = 'selected';
-            }
-
-            $optionsString .= UTIL_HtmlTag::generateTag('option', $attrs, true, $labelArr['label']);
-        } 
-
-        return UTIL_HtmlTag::generateTag('select', $this->attributes, true, $optionsString);
-    }
-}
-
-class EVENT_CMP_EventUsersList extends BASE_CMP_Users
-{
-
-    public function getFields( $userIdList )
-    {
-        $fields = array();
-
-        $qs = array();
-
-        $qBdate = BOL_QuestionService::getInstance()->findQuestionByName('birthdate', 'sex');
-
-        if ( $qBdate->onView )
-            $qs[] = 'birthdate';
-
-        $qSex = BOL_QuestionService::getInstance()->findQuestionByName('sex');
-
-        if ( $qSex->onView )
-            $qs[] = 'sex';
-
-        $questionList = BOL_QuestionService::getInstance()->getQuestionData($userIdList, $qs);
-
-        foreach ( $questionList as $uid => $q )
-        {
-
-            $fields[$uid] = array();
-
-            $age = '';
-
-            if ( !empty($q['birthdate']) )
-            {
-                $date = UTIL_DateTime::parseDate($q['birthdate'], UTIL_DateTime::MYSQL_DATETIME_DATE_FORMAT);
-
-                $age = UTIL_DateTime::getAge($date['year'], $date['month'], $date['day']);
-            }
-
-            if ( !empty($q['sex']) )
-            {
-                $fields[$uid][] = array(
-                    'label' => '',
-                    'value' => BOL_QuestionService::getInstance()->getQuestionValueLang('sex', $q['sex']) . ' ' . $age
-                );
-            }
-
-            if ( !empty($q['birthdate']) )
-            {
-                $dinfo = date_parse($q['birthdate']);
-            }
-        }
-
-        return $fields;
-    }
-}
