@@ -43,7 +43,6 @@ $router->addRoute(new OW_Route('event.invite_accept', 'event/:eventId/:list/invi
 $router->addRoute(new OW_Route('event.invite_decline', 'event/:eventId/:list/invite_decline', 'EVENT_CTRL_Base', 'inviteListDecline'));
 $router->addRoute(new OW_Route('event.approve', 'event/approve/:eventId/', 'EVENT_CTRL_Base', 'approve'));
 
-
 $provider = EVENT_CLASS_ContentProvider::getInstance();
 $provider->init();
 

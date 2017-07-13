@@ -311,12 +311,7 @@ class EVENT_CTRL_Base extends OW_ActionController
         $language = OW::getLanguage();
         $form = new EVENT_CLASS_EventAddForm('event_edit');
 
-        $form->getElement('title')->setValue($event->getTitle());
-        $form->getElement('desc')->setValue($event->getDescription());
-        $form->getElement('location')->setValue($event->getLocation());
-        $form->getElement('who_can_view')->setValue($event->getWhoCanView());
-        $form->getElement('who_can_invite')->setValue($event->getWhoCanInvite());
-        $form->getElement('who_can_invite')->setValue($event->getWhoCanInvite());
+
 
         $startTimeArray = array('hour' => date('G', $event->getStartTimeStamp()), 'minute' => date('i', $event->getStartTimeStamp()));
         $form->getElement('start_time')->setValue($startTimeArray);
@@ -712,6 +707,7 @@ class EVENT_CTRL_Base extends OW_ActionController
             throw new Redirect404Exception();
         }
 
+
         if ( !OW::getUser()->isAuthorized('event', 'view_event') )
         {
             $status = BOL_AuthorizationService::getInstance()->getActionStatus('event', 'view_event');
@@ -745,6 +741,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                 {
                     throw new Redirect403Exception();
                 }
+
                 $contentMenu = EVENT_BOL_EventService::getInstance()->getContentMenu();
                 $this->addComponent('contentMenu', $contentMenu);
                 $this->setPageHeading($language->text('event', 'event_joined_by_me_page_heading'));
@@ -825,7 +822,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                 $this->setPageHeadingIconClass('ow_ic_calendar');
                 $events = $this->eventService->findUserInvitedEvents(OW::getUser()->getId(), $page);
                 $eventsCount = $this->eventService->findUserInvitedEventsCount(OW::getUser()->getId());
-                
+
                 foreach( $events as $event )
                 {
                     $toolbarList[$event->getId()] = array();
@@ -1360,6 +1357,8 @@ class EVENT_CTRL_Base extends OW_ActionController
         
         $this->redirect($backUrl);
     }
+
+
 }
 
 

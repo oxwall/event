@@ -17,7 +17,7 @@ margin-bottom:7px;
 }
 
 .inviteLink{
-    text-align:center;    
+    text-align:center;
 }
 {/literal}
 {/style}
@@ -31,7 +31,7 @@ margin-bottom:7px;
                 <li><a href="{$editArray.delete.url}" class="ow_mild_red" onclick="return confirm('{$editArray.delete.confirmMessage}');">{$editArray.delete.label}</a></li>
                 <li><a href="{$editArray.edit.url}">{$editArray.edit.label}</a></li>
             {/if}
-            
+
             {if !empty($toolbar)}
                 {foreach from=$toolbar item="item"}
                     <li><a {if !empty($item.id)}id="{$item.id}"{/if} href="{$item.href}"  class="{if !empty($item.class)}{$item.class}{/if}">{$item.label}</a></li>
@@ -77,9 +77,9 @@ margin-bottom:7px;
         </tr>
     </table>
     {/block_decorator}
-    
+
     {add_content key='events.view.content.after_event_description' eventId=$info.id}
-    
+
     {if !empty($inviteLink)}<div class="inviteLink ow_std_margin">{decorator name='button' class='ow_ic_add' type='button' langLabel='event+invite_btn_label' id='inviteLink'}</div>{/if}
     <div class="userList">{$userListCmp}</div>
 </div>

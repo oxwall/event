@@ -56,7 +56,6 @@ class EVENT_CMP_InviteUserListSelect extends BASE_CMP_AvatarUserListSelect
         
         $idList = EVENT_BOL_EventService::getInstance()->findUserListForInvite((int)$eventId, 0, $count, $friendList);
         $this->setTemplate( OW::getPluginManager()->getPlugin('base')->getCmpViewDir() . 'avatar_user_list_select.html' );
-        
         parent::__construct($idList);
     }
 }

@@ -11,7 +11,7 @@ class EVENT_CLASS_EventAddForm extends Form
 
     const EVENT_NAME = 'event.event_add_form.get_element';
 
-    public function __construct( $name )
+    public function __construct( $name, $mobile = false )
     {
         parent::__construct($name);
 
@@ -22,6 +22,8 @@ class EVENT_CLASS_EventAddForm extends Form
         $currentYear = date('Y', time());
 
         $title = new TextField('title');
+        $mobile ? $title->setHasInvitation(true) : $title->setHasInvitation(false);
+        $title->setInvitation($language->text('event', 'add_form_title_label'));
         $title->setRequired();
         $title->setLabel($language->text('event', 'add_form_title_label'));
 
@@ -33,12 +35,14 @@ class EVENT_CLASS_EventAddForm extends Form
 
         $startDate = new DateField('start_date');
         $startDate->setMinYear($currentYear);
+        $startDate->setId('eventcus_startDate');
         $startDate->setMaxYear($currentYear + 5);
         $startDate->setRequired();
 
         $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'start_date' ), $startDate);
         OW::getEventManager()->trigger($event);
         $startDate = $event->getData();
+
 
         $this->addElement($startDate);
 
@@ -64,6 +68,7 @@ class EVENT_CLASS_EventAddForm extends Form
         OW::getEventManager()->trigger($event);
         $endDate = $event->getData();
 
+
         $this->addElement($endDate);
 
         $endTime = new EVENT_CLASS_EventTimeField('end_time');
@@ -83,6 +88,7 @@ class EVENT_CLASS_EventAddForm extends Form
         OW::getEventManager()->trigger($event);
         $location = $event->getData();
 
+
         $this->addElement($location);
 
         $whoCanView = new RadioField('who_can_view');
@@ -98,6 +104,8 @@ class EVENT_CLASS_EventAddForm extends Form
         $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'who_can_view' ), $whoCanView);
         OW::getEventManager()->trigger($event);
         $whoCanView = $event->getData();
+        $whoCanView->setColumnCount(2);
+
 
         $this->addElement($whoCanView);
 
@@ -110,6 +118,7 @@ class EVENT_CLASS_EventAddForm extends Form
             )
         );
         $whoCanInvite->setLabel($language->text('event', 'add_form_who_can_invite_label'));
+        $whoCanInvite->setColumnCount(2);
 
         $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'who_can_invite' ), $whoCanInvite);
         OW::getEventManager()->trigger($event);
@@ -121,9 +130,18 @@ class EVENT_CLASS_EventAddForm extends Form
         $submit->setValue($language->text('event', 'add_form_submit_label'));
         $this->addElement($submit);
 
-        $desc = new WysiwygTextarea('desc');
-        $desc->setLabel($language->text('event', 'add_form_desc_label'));
-        $desc->setRequired();
+        if( $mobile )
+        {
+            $desc = new Textarea('desc');
+            $desc->setLabel($language->text('event', 'add_form_desc_label'));
+            $desc->setRequired();
+        }
+        else
+        {
+            $desc = new WysiwygTextarea('desc');
+            $desc->setLabel($language->text('event', 'add_form_desc_label'));
+            $desc->setRequired();
+        }
 
         $event = new OW_Event(self::EVENT_NAME, array( 'name' => 'desc' ), $desc);
         OW::getEventManager()->trigger($event);
