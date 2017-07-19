@@ -311,6 +311,12 @@ class EVENT_CTRL_Base extends OW_ActionController
         $language = OW::getLanguage();
         $form = new EVENT_CLASS_EventAddForm('event_edit');
 
+        $form->getElement('title')->setValue($event->getTitle());
+        $form->getElement('desc')->setValue($event->getDescription());
+        $form->getElement('location')->setValue($event->getLocation());
+        $form->getElement('who_can_view')->setValue($event->getWhoCanView());
+        $form->getElement('who_can_invite')->setValue($event->getWhoCanInvite());
+        $form->getElement('who_can_invite')->setValue($event->getWhoCanInvite());
 
 
         $startTimeArray = array('hour' => date('G', $event->getStartTimeStamp()), 'minute' => date('i', $event->getStartTimeStamp()));
