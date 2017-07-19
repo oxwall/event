@@ -36,7 +36,7 @@
  * @package ow_plugins.event.bol
  * @since 1.0
  */
-final class EVENT_BOL_EventService
+class EVENT_BOL_EventService
 {
     const USER_STATUS_YES = EVENT_BOL_EventUserDao::VALUE_STATUS_YES;
     const USER_STATUS_MAYBE = EVENT_BOL_EventUserDao::VALUE_STATUS_MAYBE;
