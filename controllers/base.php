@@ -311,7 +311,7 @@ class EVENT_CTRL_Base extends OW_ActionController
         $language = OW::getLanguage();
         $form = new EVENT_CLASS_EventAddForm('event_edit');
 
-        $form->getElement('title')->setValue($event->getTitle());
+        $form->getElement('title')->setValue(htmlspecialchars_decode($event->getTitle()));
         $form->getElement('desc')->setValue($event->getDescription());
         $form->getElement('location')->setValue($event->getLocation());
         $form->getElement('who_can_view')->setValue($event->getWhoCanView());
@@ -583,7 +583,7 @@ class EVENT_CTRL_Base extends OW_ActionController
             'endDate' => $event->getEndTimeStamp() === null || !$event->getEndDateFlag() ? null : UTIL_DateTime::formatSimpleDate($event->getEndTimeDisable() ? strtotime("-1 day", $event->getEndTimeStamp()) : $event->getEndTimeStamp(),$event->getEndTimeDisable()),
             'location' => $event->getLocation(),
             'desc' => UTIL_HtmlTag::autoLink($event->getDescription()),
-            'title' => $event->getTitle(),
+            'title' => htmlspecialchars_decode($event->getTitle()),
             'creatorName' => BOL_UserService::getInstance()->getDisplayName($event->getUserId()),
             'creatorLink' => BOL_UserService::getInstance()->getUserUrl($event->getUserId()),
             'moderationStatus' => $event->status
