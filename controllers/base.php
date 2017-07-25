@@ -453,6 +453,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                     $event->setEndDateFlag(!empty($_POST['endDateFlag']));
                     $event->setStartTimeDisable( $data['start_time'] == 'all_day' );
                     $event->setEndTimeDisable( $data['end_time'] == 'all_day' );
+                    
 
                     $this->eventService->saveEvent($event);
                     
