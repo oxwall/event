@@ -172,13 +172,19 @@ class EVENT_CTRL_Base extends OW_ActionController
                     OW::getFeedback()->error($language->text('event', 'add_form_invalid_end_date_error_message'));
                 }
 
+                if ( !trim(strip_tags($data['title'])) )
+                {
+                    $datesAreValid = false;
+                    OW::getFeedback()->error($language->text('base', 'form_validator_string_error_message'));
+                }
+
                 if ( $imageValid && $datesAreValid )
                 {
                     $event = new EVENT_BOL_Event();
                     $event->setStartTimeStamp($startStamp);
                     $event->setEndTimeStamp($endStamp);
                     $event->setCreateTimeStamp(time());
-                    $event->setTitle(strip_tags($data['title']));
+                    $event->setTitle(trim(strip_tags($data['title'])));
                     $event->setLocation(UTIL_HtmlTag::autoLink(strip_tags($data['location'])));
                     $event->setWhoCanView((int) $data['who_can_view']);
                     $event->setWhoCanInvite((int) $data['who_can_invite']);
@@ -420,6 +426,12 @@ class EVENT_CTRL_Base extends OW_ActionController
                     $endStamp = strtotime("+1 day", $startStamp);
                     $endStamp = mktime(0, 0, 0, date('n',$endStamp), date('j',$endStamp), date('Y',$endStamp));
                 }
+
+                if ( !trim(strip_tags($data['title'])) )
+                {
+                    OW::getFeedback()->error($language->text('base', 'form_validator_string_error_message'));
+                    $this->redirect();
+                }
                 
                 if ( $startStamp > $endStamp )
                 {
@@ -445,7 +457,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                         }
                     }
                                         
-                    $event->setTitle($data['title']);
+                    $event->setTitle(trim(strip_tags(['title'])));
                     $event->setLocation(UTIL_HtmlTag::autoLink(strip_tags($data['location'])));
                     $event->setWhoCanView((int) $data['who_can_view']);
                     $event->setWhoCanInvite((int) $data['who_can_invite']);
