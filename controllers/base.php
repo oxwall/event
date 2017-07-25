@@ -172,13 +172,19 @@ class EVENT_CTRL_Base extends OW_ActionController
                     OW::getFeedback()->error($language->text('event', 'add_form_invalid_end_date_error_message'));
                 }
 
+                if ( !trim(strip_tags($data['title'])) )
+                {
+                    $datesAreValid = false;
+                    OW::getFeedback()->error($language->text('base', 'form_validator_string_error_message'));
+                }
+
                 if ( $imageValid && $datesAreValid )
                 {
                     $event = new EVENT_BOL_Event();
                     $event->setStartTimeStamp($startStamp);
                     $event->setEndTimeStamp($endStamp);
                     $event->setCreateTimeStamp(time());
-                    $event->setTitle(htmlspecialchars($data['title']));
+                    $event->setTitle(trim(strip_tags($data['title'])));
                     $event->setLocation(UTIL_HtmlTag::autoLink(strip_tags($data['location'])));
                     $event->setWhoCanView((int) $data['who_can_view']);
                     $event->setWhoCanInvite((int) $data['who_can_invite']);
@@ -311,7 +317,7 @@ class EVENT_CTRL_Base extends OW_ActionController
         $language = OW::getLanguage();
         $form = new EVENT_CLASS_EventAddForm('event_edit');
 
-        $form->getElement('title')->setValue(htmlspecialchars_decode($event->getTitle()));
+        $form->getElement('title')->setValue($event->getTitle());
         $form->getElement('desc')->setValue($event->getDescription());
         $form->getElement('location')->setValue($event->getLocation());
         $form->getElement('who_can_view')->setValue($event->getWhoCanView());
@@ -420,6 +426,12 @@ class EVENT_CTRL_Base extends OW_ActionController
                     $endStamp = strtotime("+1 day", $startStamp);
                     $endStamp = mktime(0, 0, 0, date('n',$endStamp), date('j',$endStamp), date('Y',$endStamp));
                 }
+
+                if ( !trim(strip_tags($data['title'])) )
+                {
+                    OW::getFeedback()->error($language->text('base', 'form_validator_string_error_message'));
+                    $this->redirect();
+                }
                 
                 if ( $startStamp > $endStamp )
                 {
@@ -445,7 +457,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                         }
                     }
                                         
-                    $event->setTitle(htmlspecialchars($data['title']));
+                    $event->setTitle(trim(strip_tags(['title'])));
                     $event->setLocation(UTIL_HtmlTag::autoLink(strip_tags($data['location'])));
                     $event->setWhoCanView((int) $data['who_can_view']);
                     $event->setWhoCanInvite((int) $data['who_can_invite']);
@@ -583,7 +595,7 @@ class EVENT_CTRL_Base extends OW_ActionController
             'endDate' => $event->getEndTimeStamp() === null || !$event->getEndDateFlag() ? null : UTIL_DateTime::formatSimpleDate($event->getEndTimeDisable() ? strtotime("-1 day", $event->getEndTimeStamp()) : $event->getEndTimeStamp(),$event->getEndTimeDisable()),
             'location' => $event->getLocation(),
             'desc' => UTIL_HtmlTag::autoLink($event->getDescription()),
-            'title' => htmlspecialchars_decode($event->getTitle()),
+            'title' => strip_tags(htmlspecialchars_decode($event->getTitle())),
             'creatorName' => BOL_UserService::getInstance()->getDisplayName($event->getUserId()),
             'creatorLink' => BOL_UserService::getInstance()->getUserUrl($event->getUserId()),
             'moderationStatus' => $event->status
