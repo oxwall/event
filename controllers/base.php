@@ -595,7 +595,7 @@ class EVENT_CTRL_Base extends OW_ActionController
             'endDate' => $event->getEndTimeStamp() === null || !$event->getEndDateFlag() ? null : UTIL_DateTime::formatSimpleDate($event->getEndTimeDisable() ? strtotime("-1 day", $event->getEndTimeStamp()) : $event->getEndTimeStamp(),$event->getEndTimeDisable()),
             'location' => $event->getLocation(),
             'desc' => UTIL_HtmlTag::autoLink($event->getDescription()),
-            'title' => htmlspecialchars_decode($event->getTitle()),
+            'title' => strip_tags(htmlspecialchars_decode($event->getTitle())),
             'creatorName' => BOL_UserService::getInstance()->getDisplayName($event->getUserId()),
             'creatorLink' => BOL_UserService::getInstance()->getUserUrl($event->getUserId()),
             'moderationStatus' => $event->status
