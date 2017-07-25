@@ -178,7 +178,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                     $event->setStartTimeStamp($startStamp);
                     $event->setEndTimeStamp($endStamp);
                     $event->setCreateTimeStamp(time());
-                    $event->setTitle(htmlspecialchars($data['title']));
+                    $event->setTitle(strip_tags($data['title']));
                     $event->setLocation(UTIL_HtmlTag::autoLink(strip_tags($data['location'])));
                     $event->setWhoCanView((int) $data['who_can_view']);
                     $event->setWhoCanInvite((int) $data['who_can_invite']);
@@ -311,7 +311,7 @@ class EVENT_CTRL_Base extends OW_ActionController
         $language = OW::getLanguage();
         $form = new EVENT_CLASS_EventAddForm('event_edit');
 
-        $form->getElement('title')->setValue(htmlspecialchars_decode($event->getTitle()));
+        $form->getElement('title')->setValue($event->getTitle());
         $form->getElement('desc')->setValue($event->getDescription());
         $form->getElement('location')->setValue($event->getLocation());
         $form->getElement('who_can_view')->setValue($event->getWhoCanView());
@@ -445,7 +445,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                         }
                     }
                                         
-                    $event->setTitle(htmlspecialchars($data['title']));
+                    $event->setTitle($data['title']);
                     $event->setLocation(UTIL_HtmlTag::autoLink(strip_tags($data['location'])));
                     $event->setWhoCanView((int) $data['who_can_view']);
                     $event->setWhoCanInvite((int) $data['who_can_invite']);
