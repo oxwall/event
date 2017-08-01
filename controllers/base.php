@@ -457,7 +457,7 @@ class EVENT_CTRL_Base extends OW_ActionController
                         }
                     }
                                         
-                    $event->setTitle(trim(strip_tags(['title'])));
+                    $event->setTitle(trim(strip_tags($data['title'])));
                     $event->setLocation(UTIL_HtmlTag::autoLink(strip_tags($data['location'])));
                     $event->setWhoCanView((int) $data['who_can_view']);
                     $event->setWhoCanInvite((int) $data['who_can_invite']);
