@@ -707,7 +707,10 @@ class EVENT_CTRL_Base extends OW_ActionController
             "title" => "event+meta_title_event_view",
             "description" => "event+meta_desc_event_view",
             "keywords" => "event+meta_keywords_event_view",
-            "vars" => array( "event_title" => $event->getTitle(), "event_description" => $event->getDescription() )
+            "vars" => array(
+                "event_title" => $event->getTitle(),
+                "event_description" => UTIL_HtmlTag::stripTags($event->getDescription())
+            )
         );
 
         OW::getEventManager()->trigger(new OW_Event("base.provide_page_meta_info", $params));
