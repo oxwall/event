@@ -309,7 +309,9 @@ class EVENT_CTRL_Base extends OW_ActionController
 
         $event = $this->getEventForParams($params);
 
-        if( $userId != $event->userId && !OW::getUser()->isAdmin() )
+        $isModerator = OW::getUser()->isAuthorized('event');
+
+        if( $userId != $event->userId && !OW::getUser()->isAdmin() && !$isModerator )
         {
             throw new Redirect404Exception();
         }
