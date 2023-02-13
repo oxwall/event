@@ -38,11 +38,12 @@
  */
 class EVENT_CMP_EventUsers extends OW_Component
 {
+    private $userLists;
+
+    private $userListMenu;
+
     private $eventService;
 
-    /**
-     * @return Constructor.
-     */
     public function __construct( $eventId )
     {
         parent::__construct();
@@ -51,8 +52,7 @@ class EVENT_CMP_EventUsers extends OW_Component
 
         $event = $this->eventService->findEvent($eventId);
 
-        if ( $event === null )
-        {
+        if ($event === null) {
             $this->setVisible(false);
         }
 
@@ -63,8 +63,6 @@ class EVENT_CMP_EventUsers extends OW_Component
         $this->assign('userLists', $this->userLists);
         $this->addComponent('userListMenu', new BASE_CMP_WidgetMenu($this->userListMenu));
     }
-    private $userLists;
-    private $userListMenu;
 
     private function addUserList( EVENT_BOL_Event $event, $status )
     {
@@ -105,7 +103,7 @@ class EVENT_CMP_EventUsers extends OW_Component
             'label' => $language->text('event', 'avatar_user_list_link_label_' . $status),
             'id' => $linkId,
             'contId' => $contId,
-            'active' => ( sizeof($this->userListMenu) < 1 ? true : false )
+            'active' => ( sizeof($this->userListMenu ?? []) < 1 ? true : false )
         );
     }
 }
