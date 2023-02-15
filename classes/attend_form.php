@@ -8,15 +8,16 @@
  */
 class EVENT_CLASS_AttendForm extends Form
 {
+    const PLUGIN_KEY = EVENT_BOL_EventService::PLUGIN_KEY;
 
     public function __construct( $eventId, $contId )
     {
-        parent::__construct('event_attend');
+        parent::__construct('event_attend', self::PLUGIN_KEY);
         $this->setAction(OW::getRouter()->urlFor('EVENT_CTRL_Base', 'attendFormResponder'));
         $this->setAjax();
-        $hidden = new HiddenField('attend_status');
+        $hidden = new HiddenField('attend_status', self::PLUGIN_KEY);
         $this->addElement($hidden);
-        $eventIdField = new HiddenField('eventId');
+        $eventIdField = new HiddenField('eventId', self::PLUGIN_KEY);
         $eventIdField->setValue($eventId);
         $this->addElement($eventIdField);
         $this->setAjaxResetOnSuccess(false);
