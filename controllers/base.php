@@ -88,8 +88,8 @@ class EVENT_CTRL_Base extends OW_ActionController
         $form->getElement('start_time')->setValue('all_day');
         $form->getElement('end_time')->setValue('all_day');
 
-        $checkboxId = UTIL_HtmlTag::generateAutoId('chk');
-        $tdId = UTIL_HtmlTag::generateAutoId('td');
+        $checkboxId = 'input_' . EVENT_BOL_EventService::PLUGIN_KEY .'_end_date_chk';
+        $tdId = 'input_' . EVENT_BOL_EventService::PLUGIN_KEY .'_end_date_td';
         $this->assign('tdId', $tdId);
         $this->assign('chId', $checkboxId);
 
@@ -361,8 +361,8 @@ class EVENT_CTRL_Base extends OW_ActionController
 
         $form->getSubmitElement('submit')->setValue(OW::getLanguage()->text('event', 'edit_form_submit_label'));
 
-        $checkboxId = UTIL_HtmlTag::generateAutoId('chk');
-        $tdId = UTIL_HtmlTag::generateAutoId('td');
+        $checkboxId = 'input_' . EVENT_BOL_EventService::PLUGIN_KEY .'_end_date_chk';
+        $tdId = 'input_' . EVENT_BOL_EventService::PLUGIN_KEY .'_end_date_td';
         $this->assign('tdId', $tdId);
         $this->assign('chId', $checkboxId);
         

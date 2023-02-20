@@ -38,6 +38,8 @@
  */
 class EVENT_BOL_EventService
 {
+    const PLUGIN_KEY = 'event';
+
     const USER_STATUS_YES = EVENT_BOL_EventUserDao::VALUE_STATUS_YES;
     const USER_STATUS_MAYBE = EVENT_BOL_EventUserDao::VALUE_STATUS_MAYBE;
     const USER_STATUS_NO = EVENT_BOL_EventUserDao::VALUE_STATUS_NO;

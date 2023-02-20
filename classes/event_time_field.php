@@ -17,9 +17,9 @@ class EVENT_CLASS_EventTimeField extends FormElement
      *
      * @param string $name
      */
-    public function __construct( $name )
+    public function __construct( $name, $id = '' )
     {
-        parent::__construct($name);
+        parent::__construct($name, $id);
         $this->militaryTime = false;
     }
 
