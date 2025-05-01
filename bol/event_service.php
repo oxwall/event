@@ -874,4 +874,47 @@ class EVENT_BOL_EventService
     {
         return $this->eventDao->findByIdList($idList);
     }
+
+    public function isUserInvited( $eventId, $userId )
+    {
+        return $this->eventDao->isUserInvited($eventId, $userId);
+    }
+
+    /**
+     * Returns users count for provided event and status.
+     *
+     * @param integer $eventId
+     * @param integer $status
+     * @return string|null
+     */
+    public function findCustomEventUsersCount( $eventId, $status )
+    {
+        $countUsers = $this->eventUserDao->findCustomUsersCountByEventIdAndStatus($eventId, $status);
+
+        if ( $countUsers <= 0 )
+        {
+            return null;
+        }
+        else
+        {
+            if ( $countUsers == 1 )
+            {
+                return $countUsers . ' ' . OW::getLanguage()->text('skmobileapp', 'participant');
+            }
+            else
+            {
+                return $countUsers . ' ' . OW::getLanguage()->text('skmobileapp', 'participants');
+            }
+        }
+    }
+
+    public function findEventUserByEventIdAndUserId( $eventId, $userId )
+    {
+        return $this->eventUserDao->findEventUserByEventIdAndUserId($eventId, $userId);
+    }
+
+    public function deleteByEventIdAndUserId($eventId, $userId)
+    {
+        $this->eventUserDao->deleteByEventIdAndUserId($eventId, $userId);
+    }
 }

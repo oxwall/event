@@ -372,5 +372,13 @@ class EVENT_BOL_EventDao extends OW_BaseDao
         return "( " . (!empty($alias) ? "`{$alias}`." : "" ) . "`" . self::START_TIME_STAMP . "` > :startTime OR ( " . (!empty($alias) ? "`{$alias}`." : "" ) . "`" . self::END_TIME_STAMP . "` IS NOT NULL AND " . (!empty($alias) ? "`{$alias}`." : "" ) . "`" . self::END_TIME_STAMP . "` > :endTime ) )";
     }
 
-    
+    public function isUserInvited( $eventId, $userId )
+    {
+        $query = "SELECT COUNT(`e`.id) AS `c` FROM `" . $this->getTableName() . "` AS `e`
+            INNER JOIN `" . EVENT_BOL_EventInviteDao::getInstance()->getTableName() . "` AS `ei` ON ( `e`.`id` = `ei`.`" . EVENT_BOL_EventInviteDao::EVENT_ID . "` )
+            WHERE `e`.status = 1 AND `ei`.`" . EVENT_BOL_EventInviteDao::USER_ID . "` = :userId AND " . $this->getTimeClause(false, 'e') . "
+            AND `e`.id = :eventId";
+
+        return $this->dbo->queryForColumn($query, array('userId' => (int) $userId, 'eventId' => (int) $eventId, 'startTime' => time(), 'endTime' => time()));
+    }
 }

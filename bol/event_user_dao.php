@@ -162,4 +162,35 @@ class EVENT_BOL_EventUserDao extends OW_BaseDao
 
         return $this->findListByExample($example);
     }
+
+    public function findCustomUsersCountByEventIdAndStatus( $eventId, $status )
+    {
+        $queryParts = BOL_UserDao::getInstance()->getUserQueryFilter("e", "userId", array(
+            "method" => "EVENT_BOL_EventUserDao::findUsersCountByEventIdAndStatus"
+        ));
+
+        $query = " SELECT count(e.id) FROM  " . $this->getTableName() . " e
+            " . $queryParts['join'] . "
+            WHERE " . $queryParts['where'] . " AND e.`".self::EVENT_ID."` = :eventId AND e.`" . self::STATUS . "` = :status ";
+
+        return $this->dbo->queryForColumn( $query, array( 'eventId' => (int)$eventId, 'status' => (int)$status ),
+            self::CACHE_LIFE_TIME, array(self::CACHE_TAG_EVENT_USER_LIST . $eventId) );
+    }
+
+    public function findEventUserByEventIdAndUserId( $eventId, $userId )
+    {
+        $query = " SELECT count(id) FROM  `" . $this->getTableName() . "`
+            WHERE `eventId` = :eventId AND `userId` = :userId ";
+
+        return $this->dbo->queryForColumn( $query, array( 'eventId' => (int)$eventId, 'userId' => (int) $userId) );
+    }
+
+    public function deleteByEventIdAndUserId( $eventId, $userId )
+    {
+        $example = new OW_Example();
+        $example->andFieldEqual(self::EVENT_ID, (int) $eventId);
+        $example->andFieldEqual(self::USER_ID, (int) $userId);
+
+        $this->deleteByExample($example);
+    }
 }
