@@ -388,9 +388,10 @@ class EVENT_BOL_EventService
             return false;
         }
 
+        $eventInvite = $this->findEventInvite($eventId, $userId);
         $userEvent = $this->eventUserDao->findObjectByEventIdAndUserId($eventId, $userId);
 
-        if ( $event->getWhoCanView() === self::CAN_VIEW_INVITATION_ONLY && $userEvent === null )
+        if ( $event->getWhoCanView() === self::CAN_VIEW_INVITATION_ONLY && $userEvent === null && $eventInvite === null )
         {
             return false;
         }
