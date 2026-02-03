@@ -49,3 +49,13 @@ $provider->init();
 $eventHandler = new EVENT_CLASS_EventHandler();
 $eventHandler->genericInit();
 $eventHandler->init();
+
+$owPlugin = OW::getPluginManager()->getPlugin('event');
+$themeManager = OW::getThemeManager();
+$baseDecoratorsToRegister = array('custom_event_ipc');
+
+foreach ( $baseDecoratorsToRegister as $name )
+{
+    $themeManager->addDecorator($name, $owPlugin->getKey());
+}
+

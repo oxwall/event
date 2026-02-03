@@ -1,0 +1,36 @@
+{* `IPC` decorator template *}
+<div class="custom_events_ipc_item">
+    <a href="{$data.eventUrl}" class="custom_events_ipc_item_picture">
+        {if !empty($data.avatar)}
+        {decorator name='avatar_item' data=$data.avatar}
+        {else}
+        <img src="{$data.imageSrc}" alt="{$data.imageTitle}" title="{$data.imageTitle}" />
+        {/if}
+    </a>
+    <div class="custom_events_ipc_item_info">
+        {if isset($data.infoString)}
+        <div class="custom_events_ipc_item_info_title">
+            {$data.infoString}
+        </div>
+        {/if}
+        <div class="custom_events_ipc_item_info_desc">
+            {$data.content}
+        </div>
+
+        {if isset($data.toolbar) && $data.toolbar}
+        <div class="clearfix">
+            <div class="ow_ipc_toolbar ow_remark">
+                {foreach from=$data.toolbar item='item' name='toolbar'}
+                {if !$smarty.foreach.toolbar.first && ( empty($item.class) || (!strstr($item.class, 'ow_ipc_date')) )} <span class="ow_delimiter">&middot;</span> {/if}
+                <span class="ow_nowrap{if !empty($item.class)} {$item.class}{/if}">
+                    {if isset($item.href)}<a {if isset($item.id)} id="{$item.id}"{/if} href="{$item.href}">{/if}
+                    {$item.label}
+                    {if isset($item.href)}</a>{/if}
+      		    </span>
+                {/foreach}
+            </div>
+        </div>
+        {/if}
+
+    </div>
+</div>

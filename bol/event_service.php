@@ -649,7 +649,7 @@ class EVENT_BOL_EventService
                 'content' => $content,
                 'title' => $title,
                 'eventUrl' => OW::getRouter()->urlForRoute('event.view', array('eventId' => $eventItem->getId())),
-                'imageSrc' => ( $eventItem->getImage() ? $this->generateImageUrl($eventItem->getImage(), true) : $this->generateDefaultImageUrl() ),
+                'imageSrc' => ( $eventItem->getImage() ? $this->generateImageUrl($eventItem->getImage(), false) : $this->generateDefaultImageUrl() ),
                 'imageTitle' => $title
             );
         }

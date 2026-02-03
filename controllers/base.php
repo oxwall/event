@@ -737,6 +737,8 @@ class EVENT_CTRL_Base extends OW_ActionController
             throw new AuthorizationException($status['msg']);
         }
 
+        OW::getDocument()->addStyleSheet(OW::getPluginManager()->getPlugin('event')->getStaticCssUrl() . 'custom_event_style.css');
+
         $configs = $this->eventService->getConfigs();
         $page = ( empty($_GET['page']) || (int) $_GET['page'] < 0 ) ? 1 : (int) $_GET['page'];
 

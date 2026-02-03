@@ -7,17 +7,20 @@
 {add_content key='event.content.list.after_menu' listType=$listType}
 
 <div class="ow_event_list clearfix">
-    <div class="ow_automargin ow_superwide">
+  <div style="display: flex;">
+    <div class="ow_automargin custom_events_ipc_wrapper">
       {if !empty($no_events) }
-        <div class="ow_nocontent">{text key="event+no_events_label"}</div>
+      <div class="ow_nocontent">{text key="event+no_events_label"}</div>
       {else}
-          {foreach from=$events key='key' item='event'}
-                {decorator name='ipc' addClass='ow_smallmargin' data=$event infoString="<a href=\"`$event.eventUrl`\">`$event.title`</a>"}
-          {/foreach}
-          <br />
-          {$paging}
+      {foreach from=$events key='key' item='event'}
+      {decorator name='custom_event_ipc' addClass='ow_smallmargin' data=$event infoString="<a href=\"`$event.eventUrl`\">`$event.title`</a>"}
+      {/foreach}
+      <div class="custom_events_ipc_paging">
+        {$paging}
+      </div>
       {/if}
     </div>
+  </div>
 </div>
 
 <div class="clearfix">{add_content key='event.add_content.list.bottom' listType=$listType}</div>
